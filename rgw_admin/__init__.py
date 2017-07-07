@@ -105,8 +105,9 @@ class AdminClient:
         )
 
     def update_user(self, user_id, email):
-        return self._put(
+        return self._post(
             'user',
+            serialization.User,
             params={
                 'uid': user_id,
                 'display-name': 'ffooo',

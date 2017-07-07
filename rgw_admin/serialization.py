@@ -9,13 +9,13 @@ class KeyEntry(Schema):
 
 
 class User(Schema):
-    email = fields.StringField()
     display_name = fields.StringField()
     user_id = fields.StringField()
+    email = fields.StringField()
+    keys = fields.ListField(KeyEntry)
     suspended = fields.IntegerField()
     max_buckets = fields.IntegerField()
     tenant = fields.StringField()
-    keys = fields.ListField(KeyEntry)
     swift_keys = fields.AnyField()
     caps = fields.AnyField()
     subusers = fields.AnyField()
