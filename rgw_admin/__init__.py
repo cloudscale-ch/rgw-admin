@@ -7,6 +7,8 @@ from botocore.credentials import ReadOnlyCredentials
 from requests.auth import AuthBase
 import requests
 
+from rgw_admin import serialization
+
 
 class S3Auth(AuthBase):
     def __init__(self, access_key, secret_key):
@@ -44,7 +46,7 @@ class AdminClient:
         self._url = url
         self._auth = S3Auth(access_key, secret_key)
 
-    def _request(self, method, path, *, params=None, data=None):
+    def _request(self, method, path, schema=None, *, params=None, data=None):
         url = urljoin(self._url, path)
 
         response = getattr(requests, method)(
@@ -63,29 +65,34 @@ class AdminClient:
             assert response.content == b''
             return
 
-        return response.json()
+        json = response.json()
+        if schema is None:
+            return json
 
-    def _get(self, path, **kwargs):
-        return self._request('get', path, **kwargs)
+        return schema.from_dict(json)
 
-    def _post(self, path, **kwargs):
-        return self._request('post', path, **kwargs)
+    def _get(self, *args, **kwargs):
+        return self._request('get', *args, **kwargs)
 
-    def _put(self, path, **kwargs):
-        return self._request('put', path, **kwargs)
+    def _post(self, *args, **kwargs):
+        return self._request('post', *args, **kwargs)
 
-    def _delete(self, path, **kwargs):
-        self._request('delete', path, **kwargs)
+    def _put(self, *args, **kwargs):
+        return self._request('put', *args, **kwargs)
+
+    def _delete(self, *args, **kwargs):
+        self._request('delete', *args, **kwargs)
 
     def list_user_ids(self):
         return self._get('metadata/user')
 
     def get_user(self, user_id):
-        return self._get('user', params={'uid': user_id})
+        return self._get('user', serialization.User, params={'uid': user_id})
 
     def get_bucket_info(self):
         return self._get(
             'bucket',
+            serialization.Bucket,
             params={
                 'stats': True})
 
@@ -110,11 +117,9 @@ class AdminClient:
             '{}={}'.format(cap, ','.join(rights))
             for cap, rights in user_caps.items())
 
-        #x = User.from_dict(dict(a='asdf'))
-        #print(x)
-
         return self._put(
             'user',
+            serialization.User,
             params={
                 'uid': user_id,
                 'display-name': display_name,
@@ -125,6 +130,7 @@ class AdminClient:
 
         return self._get(
             'usage',
+            serialization.Usage,
             params={
                 'uid': user_id,
                 'start': start.astimezone(timezone.utc).isoformat(' '),

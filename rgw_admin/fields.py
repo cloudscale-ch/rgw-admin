@@ -25,7 +25,7 @@ class Field(metaclass=ABCMeta):
     def __repr__(self):
         return '<%s: %s>' % (type(self).__name__, self.name)
 
-    @abstractmethod
+    #@abstractmethod
     def deserialize_from_string(self, value):
         raise NotImplementedError
 
@@ -50,7 +50,9 @@ class Field(metaclass=ABCMeta):
     def deserialize_value(self, value):
         if self.type is None or not isinstance(value, self.type):
             if not isinstance(value, str):
-                raise ValidationError(self, 'Weird error for value')
+                raise ValidationError(
+                    self, '(%s) for value %s' % (self.qualified_name, value)
+                )
             value = self.deserialize_from_string(value)
 
         return self.validate(value)
@@ -86,10 +88,22 @@ class SchemaField(Field):
         super().__init__(attribute=attribute)
         self._cls = cls
 
-    def deserialize(self, value):
+    def deserialize_value(self, value):
         if isinstance(value, dict):
             self._cls.from_dict(value)
         elif isinstance(value, self._cls):
             return value
 
         raise ValidationError(self, 'Provided %s instead of a dict.' % value)
+
+
+class ListField(Field):
+    def __init__(self, cls, attribute=None):
+        super().__init__(attribute=attribute)
+        self._cls = cls
+
+    def deserialize_value(self, value):
+        if not isinstance(value, (tuple, list)):
+            raise ValidationError(self, 'Provided %s instead of a list.' % value)
+
+        return [self._cls.from_dict(element) for element in value]
