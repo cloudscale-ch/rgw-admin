@@ -34,12 +34,19 @@ class Schema(metaclass=SchemaMeta):
             setattr(self, key, value)
 
     @classmethod
-    def from_dict(cls, dct):
+    def from_dict(cls, dct, report_unused=True):
         used = set()
         kwargs = {}
         for field in cls._fields:
             used.add(field.name)
             kwargs[field.name] = field.deserialize(dct)
+
+        if report_unused:
+            unused = set(dct) - used
+            if unused:
+                raise fields.ValidationError(
+                    None, 'Found unused fields %s.' % ', '.join(unused)
+                )
 
         return cls(**kwargs)
 
