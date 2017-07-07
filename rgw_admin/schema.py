@@ -38,7 +38,7 @@ class Schema(metaclass=SchemaMeta):
         used = set()
         kwargs = {}
         for field in cls._fields:
-            used.add(field.name)
+            used.add(field.attribute or field.name)
             kwargs[field.name] = field.deserialize(dct)
 
         if report_unused:

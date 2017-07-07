@@ -104,14 +104,14 @@ class AdminClient:
             )
         )
 
-    def update_user(self, user_id, email):
+    def update_user(self, user_id, display_name):
         return self._post(
             'user',
             serialization.User,
             params={
                 'uid': user_id,
-                'display-name': 'ffooo',
-                'email': email})
+                'display-name': display_name
+            })
 
     def create_user(self, user_id, display_name, *, user_caps={}):
         user_caps_str = ';'.join(
@@ -126,14 +126,14 @@ class AdminClient:
                 'display-name': display_name,
                 'user-caps': user_caps_str})
 
-    def get_usage(self, user_id, start: datetime):
-        end = start + timedelta(hours=5)
+    def get_usage(self, user_id=None, start : datetime = None):
+        #end = start + timedelta(hours=5)
 
         return self._get(
             'usage',
             serialization.Usage,
             params={
                 'uid': user_id,
-                'start': start.astimezone(timezone.utc).isoformat(' '),
+                #'start': start.astimezone(timezone.utc).isoformat(' '),
                 # 'end': end.astimezone(timezone.utc).isoformat(' '),
                 'show-summary': False})

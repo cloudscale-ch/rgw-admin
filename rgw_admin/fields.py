@@ -19,6 +19,8 @@ class Field(metaclass=ABCMeta):
         self.default = default
 
     def __set_name__(self, parent_name, name):
+        if name == self.attribute:
+            raise ValidationError(self, "Don't use an attribute if the name matches it.")
         self.qualified_name = parent_name + '.' + name
         self.name = name
 
