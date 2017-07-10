@@ -29,18 +29,46 @@ class Category(Schema):
     bytes_received = fields.IntegerField()
 
 
-class Bucket(Schema):
+class BucketUsage(Schema):
     name = fields.StringField(attribute='bucket')
-    time = fields.StringField()
+    datetime = fields.StringField(attribute='time')
     owner_id = fields.StringField(attribute='owner')
     timestamp = fields.IntegerField(attribute="epoch")
     categories = fields.ListField(Category)
 
 
-class Entry(Schema):
-    user = fields.StringField()
-    buckets = fields.ListField(Bucket)
+class UsageEntry(Schema):
+    user_id = fields.StringField(attribute='user')
+    buckets = fields.ListField(BucketUsage)
 
 
 class Usage(Schema):
-    entries = fields.ListField(Entry)
+    entries = fields.ListField(UsageEntry)
+
+
+class BucketSize(Schema):
+    size_kb_actual = fields.IntegerField()
+    size_kb = fields.IntegerField()
+    num_objects = fields.IntegerField()
+
+
+class Bucket(Schema):
+    name = fields.StringField(attribute='bucket')
+    index_pool = fields.StringField()
+    owner = fields.StringField()
+    size = fields.DictField(
+        key=fields.StringField(),
+        value=BucketSize,
+        attribute='usage'
+    )
+    marker = fields.StringField()
+    id = fields.StringField()
+    master_ver = fields.StringField()
+    bucket_quota = fields.AnyField()
+    ver = fields.StringField()
+    pool = fields.StringField()
+    mtime = fields.StringField()
+    max_marker = fields.StringField()
+
+
+BucketList = fields.ListField(Bucket)

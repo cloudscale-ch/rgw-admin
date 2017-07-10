@@ -47,9 +47,9 @@ class Field(metaclass=ABCMeta):
 
             raise ValidationError(self, 'No value in dict for %s' % attribute)
 
-        return self.deserialize_value(value)
+        return self.deserialize_from_python(value)
 
-    def deserialize_value(self, value):
+    def deserialize_from_python(self, value):
         if self.type is None or not isinstance(value, self.type):
             if not isinstance(value, str):
                 raise ValidationError(
@@ -61,7 +61,7 @@ class Field(metaclass=ABCMeta):
 
 
 class AnyField(Field):
-    def deserialize_value(self, value):
+    def deserialize_from_python(self, value):
         return value
 
 
@@ -90,13 +90,31 @@ class SchemaField(Field):
         super().__init__(attribute=attribute)
         self._cls = cls
 
-    def deserialize_value(self, value):
+    def deserialize_from_python(self, value):
         if isinstance(value, dict):
-            self._cls.from_dict(value)
+            self._cls.deserialize_from_python(value)
         elif isinstance(value, self._cls):
             return value
 
         raise ValidationError(self, 'Provided %s instead of a dict.' % value)
+
+
+class DictField(Field):
+    def __init__(self, key, value, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._key_field = key
+        self._value_field = value
+
+    def deserialize_from_python(self, value):
+        if not isinstance(value, dict):
+            raise ValidationError(self, 'Expected a dict, not %s.' % value)
+
+        new_dct = {}
+        for key, value in value.items():
+            new_key = self._key_field.deserialize_from_python(key)
+            new_dct[new_key] = self._value_field.deserialize_from_python(value)
+
+        return new_dct
 
 
 class ListField(Field):
@@ -104,8 +122,8 @@ class ListField(Field):
         super().__init__(attribute=attribute)
         self._cls = cls
 
-    def deserialize_value(self, value):
+    def deserialize_from_python(self, value):
         if not isinstance(value, (tuple, list)):
             raise ValidationError(self, 'Provided %s instead of a list.' % value)
 
-        return [self._cls.from_dict(element) for element in value]
+        return [self._cls.deserialize_from_python(element) for element in value]

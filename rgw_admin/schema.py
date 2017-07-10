@@ -34,7 +34,10 @@ class Schema(metaclass=SchemaMeta):
             setattr(self, key, value)
 
     @classmethod
-    def from_dict(cls, dct, report_unused=True):
+    def deserialize_from_python(cls, dct, report_unused=True):
+        if not isinstance(dct, dict):
+            raise fields.ValidationError(None, '%s is not a dictionary.' % dct)
+
         used = set()
         kwargs = {}
         for field in cls._fields:
@@ -51,8 +54,8 @@ class Schema(metaclass=SchemaMeta):
         return cls(**kwargs)
 
     @classmethod
-    def as_field(cls):
-        return fields.from_dict(cls)
+    def as_field(cls, attribute=None):
+        return fields.SchemaField(cls, attribute=None)
 
     def __repr__(self):
         fields = [

@@ -69,7 +69,7 @@ class AdminClient:
         if schema is None:
             return json
 
-        return schema.from_dict(json)
+        return schema.deserialize_from_python(json)
 
     def _get(self, *args, **kwargs):
         return self._request('get', *args, **kwargs)
@@ -92,7 +92,7 @@ class AdminClient:
     def get_bucket_info(self):
         return self._get(
             'bucket',
-            serialization.Bucket,
+            serialization.BucketList,
             params={
                 'stats': True})
 
@@ -134,6 +134,6 @@ class AdminClient:
             serialization.Usage,
             params={
                 'uid': user_id,
-                #'start': start.astimezone(timezone.utc).isoformat(' '),
+                'start': start.astimezone(timezone.utc).isoformat(' '),
                 # 'end': end.astimezone(timezone.utc).isoformat(' '),
                 'show-summary': False})
