@@ -22,7 +22,7 @@ class User(Schema):
 
 
 class Category(Schema):
-    category = fields.StringField()
+    name = fields.StringField(attribute='category')
     bytes_sent = fields.IntegerField()
     ops = fields.IntegerField()
     successful_ops = fields.IntegerField()

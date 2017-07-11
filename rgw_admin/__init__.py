@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from urllib.parse import urljoin, urlsplit
 
 from django.utils import timezone
@@ -45,6 +45,8 @@ class AdminClient:
     def __init__(self, url, access_key, secret_key):
         self._url = url
         self._auth = S3Auth(access_key, secret_key)
+        self._access_key = access_key
+        self._secret_key = secret_key
 
     def _request(self, method, path, schema=None, *, params=None, data=None):
         url = urljoin(self._url, path)
@@ -89,12 +91,35 @@ class AdminClient:
     def get_user(self, user_id):
         return self._get('user', serialization.User, params={'uid': user_id})
 
-    def get_bucket_info(self):
+    def get_bucket_info(self, name, *, user_id=None):
+        return self._get(
+            'bucket',
+            serialization.Bucket,
+            params={
+                'uid': user_id,
+                'bucket': name,
+                'stats': True,
+            }
+        )
+
+    def list_bucket_info(self, *, user_id=None):
         return self._get(
             'bucket',
             serialization.BucketList,
             params={
-                'stats': True})
+                'uid': user_id,
+                'stats': True,
+            }
+        )
+
+    def delete_bucket(self, name, purge_objects=False):
+        return self._delete(
+            'bucket',
+            params={
+                'bucket': name,
+                'purge-objects': purge_objects
+            }
+        )
 
     def delete_user(self, user_id):
         return self._delete(
@@ -126,14 +151,17 @@ class AdminClient:
                 'display-name': display_name,
                 'user-caps': user_caps_str})
 
-    def get_usage(self, user_id=None, start : datetime = None):
+    def get_usage(self, user_id=None, start : datetime = None, end : datetime = None):
         #end = start + timedelta(hours=5)
-
+        if start is not None:
+            start = start.astimezone(timezone.utc).isoformat(' ')
+        if end is not None:
+            end = end.astimezone(timezone.utc).isoformat(' ')
         return self._get(
             'usage',
             serialization.Usage,
             params={
                 'uid': user_id,
-                'start': start.astimezone(timezone.utc).isoformat(' '),
-                # 'end': end.astimezone(timezone.utc).isoformat(' '),
+                'start': start,
+                'end': end,
                 'show-summary': False})
