@@ -3,3 +3,4 @@ venv
 *.pyc
 .cache
 .tox
+rgw_admin.egg-info
