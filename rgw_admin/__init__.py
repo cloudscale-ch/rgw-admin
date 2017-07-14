@@ -1,7 +1,7 @@
+import pytz
 from datetime import datetime
 from urllib.parse import urljoin, urlsplit
 
-from django.utils import timezone
 from botocore.auth import HmacV1Auth
 from botocore.credentials import ReadOnlyCredentials
 from requests.auth import AuthBase
@@ -154,9 +154,9 @@ class AdminClient:
     def get_usage(self, user_id=None, start : datetime = None, end : datetime = None):
         #end = start + timedelta(hours=5)
         if start is not None:
-            start = start.astimezone(timezone.utc).isoformat(' ')
+            start = start.astimezone(pytz.utc).isoformat(' ')
         if end is not None:
-            end = end.astimezone(timezone.utc).isoformat(' ')
+            end = end.astimezone(pytz.utc).isoformat(' ')
         return self._get(
             'usage',
             serialization.Usage,
