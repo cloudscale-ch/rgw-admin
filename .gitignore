@@ -1,2 +1,5 @@
+venv
+*.sw[opmn]
 *.pyc
-*.swp
+.cache
+.tox
