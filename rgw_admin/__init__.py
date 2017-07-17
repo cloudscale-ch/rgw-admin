@@ -151,12 +151,9 @@ class AdminClient:
                 'display-name': display_name,
                 'user-caps': user_caps_str})
 
-    def get_usage(self, user_id=None, start : datetime = None, end : datetime = None):
-        #end = start + timedelta(hours=5)
-        if start is not None:
-            start = start.astimezone(pytz.utc).isoformat(' ')
-        if end is not None:
-            end = end.astimezone(pytz.utc).isoformat(' ')
+    def get_usage(self, user_id=None, start : int = None, end : int = None):
+        assert start is None or isinstance(start, (int, float)), start
+        assert end is None or isinstance(start, (int, float)), end
         return self._get(
             'usage',
             serialization.Usage,
