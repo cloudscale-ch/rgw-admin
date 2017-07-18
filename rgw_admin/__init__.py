@@ -1,4 +1,3 @@
-import pytz
 from datetime import datetime
 from urllib.parse import urljoin, urlsplit
 
@@ -152,8 +151,8 @@ class AdminClient:
                 'user-caps': user_caps_str})
 
     def get_usage(self, user_id=None, start : int = None, end : int = None):
-        assert start is None or isinstance(start, (int, float)), start
-        assert end is None or isinstance(end, (int, float)), end
+        assert start is None or isinstance(start, datetime), start
+        assert end is None or isinstance(end, datetime), end
         return self._get(
             'usage',
             serialization.Usage,
