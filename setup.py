@@ -24,7 +24,7 @@ with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
 requirements = [l for l in lines if l and not l.startswith('#')]
 
 setup(
-    name='rgw_admin',
+    name='rgw-admin',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
@@ -35,7 +35,7 @@ setup(
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://git.cloudscale.ch/devmonkeys/rgw_admin',
+    url='https://github.com/cloudscale-ch/rgw-admin',
 
     # Author details
     author='cloudscale.ch',
