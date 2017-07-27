@@ -33,7 +33,10 @@ class HttpError(Exception):
             # In case of 400 status_codes you get a json return that has an
             # attribute called 'Code'. All the other information is usually
             # useless.
-            message = response.json()['Code']
+            try:
+                message = response.json()['Code']
+            except ValueError:
+                message = 'HTTP ' + str(response.status_code)
         else:
             message = 'HTTP ' + str(response.status_code)
         super().__init__(message)
