@@ -116,21 +116,22 @@ class AdminClient:
             }
         )
 
-    def delete_bucket(self, name, purge_objects=False):
+    def delete_bucket(self, name, purge_data=False):
         return self._delete(
             'bucket',
             params={
                 'bucket': name,
-                'purge-objects': purge_objects
+                'purge-objects': purge_data
             }
         )
 
-    def delete_user(self, user_id):
+    def delete_user(self, user_id, purge_data=True):
         return self._delete(
             'user',
-            params=dict(
+            params={
                 uid=user_id,
-            )
+                'purge-objects': purge_data
+            }
         )
 
     def update_user(self, user_id, display_name):
