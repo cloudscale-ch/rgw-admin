@@ -130,7 +130,7 @@ class AdminClient:
             'user',
             params={
                 'uid': user_id,
-                'purge-objects': purge_data
+                'purge-data': purge_data
             }
         )
 
