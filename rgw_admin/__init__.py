@@ -129,7 +129,7 @@ class AdminClient:
         return self._delete(
             'user',
             params={
-                uid=user_id,
+                'uid': user_id,
                 'purge-objects': purge_data
             }
         )
