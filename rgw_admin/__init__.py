@@ -40,6 +40,7 @@ class HttpError(Exception):
         else:
             message = 'HTTP ' + str(response.status_code)
         super().__init__(message)
+        self.message = message
         self.response = response
 
 
