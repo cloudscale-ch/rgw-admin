@@ -96,15 +96,16 @@ class AdminClient:
         return self._get('user', serialization.User, params={'uid': user_id})
 
     def get_bucket_info(self, name, *, user_id=None):
-        return self._get(
+        json = self._get(
             'bucket',
-            serialization.Bucket,
             params={
                 'uid': user_id,
                 'bucket': name,
                 'stats': True,
             }
         )
+        # At this point there should be an entry.
+        return serialization.Bucket.deserialize_from_python(json[0])
 
     def list_bucket_info(self, *, user_id=None):
         return self._get(
