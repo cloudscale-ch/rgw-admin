@@ -96,6 +96,9 @@ class AdminClient:
         return self._get('user', serialization.User, params={'uid': user_id})
 
     def get_bucket_info(self, name, *, user_id=None):
+        """
+        Returns None if the bucket doesn't exist.
+        """
         json = self._get(
             'bucket',
             params={
@@ -105,6 +108,8 @@ class AdminClient:
             }
         )
         # At this point there should be an entry.
+        if not json:
+            return None
         return serialization.Bucket.deserialize_from_python(json[0])
 
     def list_bucket_info(self, *, user_id=None):
