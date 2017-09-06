@@ -90,15 +90,19 @@ class AdminClient:
         self._request('delete', *args, **kwargs)
 
     def list_user_ids(self):
-        return self._get('metadata/user')
+        return self._get('metadata/user', serializer=None)
 
     def get_user(self, user_id):
         return self._get('user', serialization.User, params={'uid': user_id})
 
-    def get_bucket_info(self, name, *, user_id=None):
+    def get_bucket_stats(self, name, *, user_id=None):
         """
         Returns None if the bucket doesn't exist.
         """
+        raise NotImplementedError(
+            "The bucket param below seems to be ignored. Therefore it's "
+            "impossible to get this working."
+        )
         json = self._get(
             'bucket',
             params={
@@ -112,13 +116,19 @@ class AdminClient:
             return None
         return serialization.Bucket.deserialize_from_python(json[0])
 
-    def list_bucket_info(self, *, user_id=None):
+    def list_bucket_names(self, *, user_id=None):
+        return self._list_bucket_stats(user_id, stats=False, serializer=None)
+
+    def list_bucket_stats(self, *, user_id=None):
+        return self._list_bucket_stats(user_id)
+
+    def _list_bucket_stats(self, user_id=None, stats=True, serializer=serialization.BucketList):
         return self._get(
             'bucket',
-            serialization.BucketList,
+            serializer,
             params={
                 'uid': user_id,
-                'stats': True,
+                'stats': stats,
             }
         )
 
