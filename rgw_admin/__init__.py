@@ -1,5 +1,5 @@
 from datetime import datetime
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import urljoin, urlsplit, urlencode
 
 from botocore.auth import HmacV1Auth
 from botocore.credentials import ReadOnlyCredentials
@@ -90,7 +90,7 @@ class AdminClient:
         self._request('delete', *args, **kwargs)
 
     def list_user_ids(self):
-        return self._get('metadata/user', serializer=None)
+        return self._get('metadata/user')
 
     def get_user(self, user_id):
         return self._get('user', serialization.User, params={'uid': user_id})
@@ -150,14 +150,16 @@ class AdminClient:
             }
         )
 
-    def update_user(self, user_id, display_name):
+    def update_user(self, user_id, *, display_name=None):
+        params = {'uid': user_id}
+        if display_name is not None:
+            params['display-name'] = display_name
+
         return self._post(
             'user',
             serialization.User,
-            params={
-                'uid': user_id,
-                'display-name': display_name
-            })
+            params=params
+        )
 
     def create_user(self, user_id, display_name, *, user_caps={}):
         user_caps_str = ';'.join(
@@ -183,3 +185,13 @@ class AdminClient:
                 'start': start,
                 'end': end,
                 'show-summary': False})
+
+    def generate_new_secret_key(self, user_id, access_key):
+        # The url for keys is `user?key`, which makes no sense.
+        dct = {'uid': user_id, 'access-key': access_key}
+        params = 'key&' + urlencode(dct)
+        return self._put(
+            'user',
+            serialization.KeyEntryList,
+            params=params
+        )

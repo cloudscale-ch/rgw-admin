@@ -72,3 +72,4 @@ class Bucket(Schema):
 
 
 BucketList = fields.ListField(Bucket)
+KeyEntryList = fields.ListField(KeyEntry)
