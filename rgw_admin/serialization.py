@@ -23,10 +23,10 @@ class User(Schema):
 
 class Category(Schema):
     name = fields.StringField(attribute='category')
-    bytes_sent = fields.IntegerField()
-    ops = fields.IntegerField()
-    successful_ops = fields.IntegerField()
-    bytes_received = fields.IntegerField()
+    sent_bytes = fields.IntegerField(attribute='bytes_sent')
+    requests = fields.IntegerField(attribute='ops')
+    successful_requests = fields.IntegerField(attribute='successful_ops')
+    received_bytes = fields.IntegerField(attribute='bytes_received')
 
 
 class BucketUsage(Schema):
