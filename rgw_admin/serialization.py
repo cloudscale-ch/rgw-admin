@@ -70,6 +70,18 @@ class Bucket(Schema):
     mtime = fields.StringField()
     max_marker = fields.StringField()
 
+    @property
+    def size_kb_actual(self):
+        return sum(size.size_kb_actual for size in self.size.values())
+
+    @property
+    def size_kb(self):
+        return sum(size.size_kb for size in self.size.values())
+
+    @property
+    def num_objects(self):
+        return sum(size.num_objects for size in self.size.values())
+
 
 BucketList = fields.ListField(Bucket)
 KeyEntryList = fields.ListField(KeyEntry)
