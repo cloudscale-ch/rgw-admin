@@ -36,6 +36,18 @@ class BucketUsage(Schema):
     timestamp = fields.IntegerField(attribute="epoch")
     categories = fields.ListField(Category)
 
+    def get_requests(self):
+        return sum(category.requests for category in self.categories)
+
+    def get_successful_requests(self):
+        return sum(category.successful_requests for category in self.categories)
+
+    def get_sent_bytes(self):
+        return sum(category.sent_bytes for category in self.categories)
+
+    def get_received_bytes(self):
+        return sum(category.received_bytes for category in self.categories)
+
 
 class UsageEntry(Schema):
     user_id = fields.StringField(attribute='user')
