@@ -47,20 +47,18 @@ class HttpError(Exception):
 class AdminClient:
     def __init__(self, url, access_key, secret_key, verify_cert=True):
         self._url = url
-        self._auth = S3Auth(access_key, secret_key)
-        self._access_key = access_key
-        self._secret_key = secret_key
-        self._verify_cert = verify_cert
+        self._session = session = requests.Session()
+
+        session.verify = verify_cert
+        session.auth = S3Auth(access_key, secret_key)
 
     def _request(self, method, path, schema=None, *, params=None, data=None):
         url = urljoin(self._url, path)
 
         response = getattr(requests, method)(
             url,
-            auth=self._auth,
             params=params,
             data=data,
-            verify=self._verify_cert
         )
 
         if response.status_code >= 400:
