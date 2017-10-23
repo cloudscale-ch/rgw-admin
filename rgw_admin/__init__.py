@@ -55,7 +55,7 @@ class AdminClient:
     def _request(self, method, path, schema=None, *, params=None, data=None):
         url = urljoin(self._url, path)
 
-        response = getattr(requests, method)(
+        response = getattr(self._session, method)(
             url,
             params=params,
             data=data,
