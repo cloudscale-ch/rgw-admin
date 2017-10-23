@@ -92,7 +92,7 @@ class SchemaField(Field):
 
     def deserialize_from_python(self, value):
         if isinstance(value, dict):
-            self._cls.deserialize_from_python(value)
+            return self._cls.deserialize_from_python(value)
         elif isinstance(value, self._cls):
             return value
 
