@@ -5,6 +5,7 @@ from botocore.auth import HmacV1Auth
 from botocore.credentials import ReadOnlyCredentials
 from requests.auth import AuthBase
 import requests
+from requests.execeptions import ConnectionError
 
 from rgw_admin import serialization
 
@@ -45,21 +46,35 @@ class HttpError(Exception):
 
 
 class AdminClient:
-    def __init__(self, url, access_key, secret_key, verify_cert=True):
+    def __init__(self, url, access_key, secret_key, *, verify_cert=True, redundant_url=None):
         self._url = url
+        self._redundant_url = redundant_url
+        """
+        The redundant is simply here for high availability. It's used in case one
+        server is dead.
+        """
         self._session = session = requests.Session()
 
         session.verify = verify_cert
         session.auth = S3Auth(access_key, secret_key)
 
     def _request(self, method, path, schema=None, *, params=None, data=None):
+        def _do_request(url):
+            return getattr(self._session, method)(
+                url,
+                params=params,
+                data=data,
+            )
+
         url = urljoin(self._url, path)
 
-        response = getattr(self._session, method)(
-            url,
-            params=params,
-            data=data,
-        )
+        try:
+            response = _do_request(url)
+        except ConnectionError:
+            if not self._redundant_url:
+                raise
+            url = urljoin(self._redundant_url, path)
+            response = _do_request(url)
 
         if response.status_code >= 400:
             raise HttpError(response)
