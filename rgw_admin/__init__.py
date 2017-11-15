@@ -5,7 +5,7 @@ from botocore.auth import HmacV1Auth
 from botocore.credentials import ReadOnlyCredentials
 from requests.auth import AuthBase
 import requests
-from requests.execeptions import ConnectionError
+from requests.exceptions import ConnectionError
 
 from rgw_admin import serialization
 
