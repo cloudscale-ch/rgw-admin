@@ -34,7 +34,7 @@ class Schema(metaclass=SchemaMeta):
             setattr(self, key, value)
 
     @classmethod
-    def deserialize_from_python(cls, dct, report_unused=True):
+    def deserialize_from_python(cls, dct, report_unused=False):
         if not isinstance(dct, dict):
             raise fields.ValidationError(None, '%s is not a dictionary.' % dct)
 

@@ -66,7 +66,6 @@ class BucketSize(Schema):
 
 class Bucket(Schema):
     name = fields.StringField(attribute='bucket')
-    index_pool = fields.StringField()
     owner = fields.StringField()
     size = fields.DictField(
         key=fields.StringField(),
@@ -78,7 +77,6 @@ class Bucket(Schema):
     master_ver = fields.StringField()
     bucket_quota = fields.AnyField()
     ver = fields.StringField()
-    pool = fields.StringField()
     mtime = fields.StringField()
     max_marker = fields.StringField()
 
