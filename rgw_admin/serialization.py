@@ -90,7 +90,10 @@ class Bucket(Schema):
 
     @property
     def num_objects(self):
-        return sum(size.num_objects for size in self.size.values())
+        # The rgw.none filter exists because of a bug in ceph, just remove it:
+        # http://tracker.ceph.com/issues/37942
+        return sum(size.num_objects for key, size in self.size.items()
+                   if key != 'rgw.none')
 
 
 BucketList = fields.ListField(Bucket)
