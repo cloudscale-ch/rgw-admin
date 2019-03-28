@@ -75,6 +75,18 @@ class EmailField(StringField):
         return ValidationError(self, 'asdf')
 
 
+class BooleanField(Field):
+    type = bool
+
+    def deserialize_from_string(self, value):
+        if value == 'True':
+            return True
+        elif value == 'False':
+            return False
+        else:
+            raise ValidationError(self, 'Invalid boolean: %s' % value)
+
+
 class IntegerField(Field):
     type = int
 
