@@ -31,6 +31,7 @@ class Category(Schema):
 
 class BucketUsage(Schema):
     name = fields.StringField(attribute='bucket')
+    zonegroup = fields.StringField()
     datetime = fields.StringField(attribute='time')
     owner_id = fields.StringField(attribute='owner')
     timestamp = fields.IntegerField(attribute="epoch")

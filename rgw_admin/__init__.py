@@ -105,6 +105,15 @@ class AdminClient:
     def list_user_ids(self):
         return self._get('metadata/user')
 
+    def get_config(self):
+        return self._get('config')
+
+    def get_zone_groups(self):
+        return self.get_period()['period_map']['zonegroups']
+
+    def get_period(self):
+        return self._get('realm/period')
+
     def get_user(self, user_id):
         return self._get('user', serialization.User, params={'uid': user_id})
 
