@@ -31,7 +31,6 @@ class Category(Schema):
 
 class BucketUsage(Schema):
     name = fields.StringField(attribute='bucket')
-    zonegroup = fields.StringField()
     datetime = fields.StringField(attribute='time')
     owner_id = fields.StringField(attribute='owner')
     timestamp = fields.IntegerField(attribute="epoch")
@@ -73,6 +72,7 @@ class Bucket(Schema):
         value=BucketSize,
         attribute='usage'
     )
+    zonegroup_id = fields.StringField(attribute='zonegroup')
     marker = fields.StringField()
     id = fields.StringField()
     master_ver = fields.StringField()
