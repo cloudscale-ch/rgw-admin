@@ -120,15 +120,14 @@ class AdminClient:
     def get_user(self, user_id):
         return self._get('user', serialization.User, params={'uid': user_id})
 
-    def get_bucket_stats(self, name, *, user_id=None):
+    def get_bucket_stats(self, name):
         """
         Returns None if the bucket doesn't exist.
         """
-        json = self._list_bucket_stats(user_id=user_id, bucket_name=name, serializer=None)
+        json = self._list_bucket_stats(bucket_name=name, serializer=None)
         if not json:
             return None
-        assert len(json) == 1
-        return serialization.Bucket.deserialize_from_python(json[0])
+        return serialization.Bucket.deserialize_from_python(json)
 
     def list_bucket_names(self, *, user_id=None):
         return self._list_bucket_stats(
