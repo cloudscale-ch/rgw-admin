@@ -84,6 +84,9 @@ class AdminClient:
             assert response.content == b''
             return
 
+        if response.content == b'':
+            # Sometimes with empty results they don't return proper JSON
+            return None
         json = response.json()
         if schema is None:
             return json
@@ -121,38 +124,27 @@ class AdminClient:
         """
         Returns None if the bucket doesn't exist.
         """
-        raise NotImplementedError(
-            "The bucket param below seems to be ignored. Therefore it's "
-            "impossible to get this working."
-        )
-        json = self._get(
-            'bucket',
-            params={
-                'uid': user_id,
-                'bucket': name,
-                'stats': True,
-            }
-        )
-        # At this point there should be an entry.
+        json = self._list_bucket_stats(user_id=user_id, bucket_name=name, serializer=None)
         if not json:
             return None
+        assert len(json) == 1
         return serialization.Bucket.deserialize_from_python(json[0])
 
     def list_bucket_names(self, *, user_id=None):
-        return self._list_bucket_stats(user_id, stats=False, serializer=None)
+        return self._list_bucket_stats(
+            user_id, stats=False, serializer=None)
 
     def list_bucket_stats(self, *, user_id=None):
         return self._list_bucket_stats(user_id)
 
-    def _list_bucket_stats(self, user_id=None, stats=True, serializer=serialization.BucketList):
-        return self._get(
-            'bucket',
-            serializer,
-            params={
-                'uid': user_id,
-                'stats': stats,
-            }
-        )
+    def _list_bucket_stats(self, user_id=None, bucket_name=None, stats=True,
+                           serializer=serialization.BucketList):
+        params = {'stats': stats}
+        if user_id is not None:
+            params['uid'] = user_id
+        if bucket_name is not None:
+            params['bucket'] = bucket_name
+        return self._get('bucket', serializer, params=params)
 
     def delete_bucket(self, name, purge_data=False):
         return self._delete(
