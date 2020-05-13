@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from urllib.parse import urljoin, urlsplit, urlencode
 
 from botocore.auth import HmacV1Auth
@@ -187,7 +187,7 @@ class AdminClient:
                 'display-name': display_name,
                 'user-caps': user_caps_str})
 
-    def get_usage(self, user_id=None, start : int = None, end : int = None):
+    def get_usage(self, user_id=None, start: int = None, end: int = None):
         assert start is None or isinstance(start, datetime), start
         assert end is None or isinstance(end, datetime), end
         return self._get(
