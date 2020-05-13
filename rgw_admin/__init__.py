@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from urllib.parse import urljoin, urlsplit, urlencode
 
 from botocore.auth import HmacV1Auth
@@ -207,4 +207,14 @@ class AdminClient:
             'user',
             serialization.KeyEntryList,
             params=params
+        )
+
+    def delete_usage(self, until: date):
+        assert isinstance(until, date), until
+        return self._delete(
+            'usage',
+            params={
+                'end': str(until),
+                'remove-all': True
+            }
         )
