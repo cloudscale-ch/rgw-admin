@@ -209,6 +209,27 @@ class AdminClient:
             params=params
         )
 
+    def create_key(self, user_id, access_key=None):
+        # The url for keys is `user?key`, which makes no sense.
+        dct = {'uid': user_id}
+        if access_key is not None:
+            dct['access_key'] = access_key
+        params = 'key&' + urlencode(dct)
+        return self._put(
+            'user',
+            serialization.KeyEntryList,
+            params=params
+        )
+
+    def delete_key(self, user_id, access_key):
+        # The url for keys is `user?key`, which makes no sense.
+        dct = {'uid': user_id, 'access-key': access_key}
+        params = 'key&' + urlencode(dct)
+        return self._delete(
+            'user',
+            params=params
+        )
+
     def delete_usage(self, until: date):
         assert isinstance(until, date), until
         return self._delete(
