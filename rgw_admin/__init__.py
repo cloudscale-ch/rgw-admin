@@ -213,7 +213,7 @@ class AdminClient:
         # The url for keys is `user?key`, which makes no sense.
         dct = {'uid': user_id}
         if access_key is not None:
-            dct['access_key'] = access_key
+            dct['access-key'] = access_key
         params = 'key&' + urlencode(dct)
         return self._put(
             'user',
