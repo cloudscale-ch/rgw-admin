@@ -1,11 +1,10 @@
-from datetime import date, datetime
-from urllib.parse import urljoin, urlsplit, urlencode
-
+import requests
 from botocore.auth import HmacV1Auth
 from botocore.credentials import ReadOnlyCredentials
+from datetime import date, datetime
 from requests.auth import AuthBase
-import requests
 from requests.exceptions import ConnectionError
+from urllib.parse import urljoin, urlsplit, urlencode
 
 from rgw_admin import serialization
 
@@ -230,12 +229,21 @@ class AdminClient:
             params=params
         )
 
-    def delete_usage(self, until: date):
+    def delete_usage(self, until: date, user_id=None):
         assert isinstance(until, date), until
-        return self._delete(
-            'usage',
-            params={
-                'end': str(until),
-                'remove-all': True
-            }
-        )
+        if user_id:
+            return self._delete(
+                'usage',
+                params={
+                    'uid': user_id,
+                    'end': str(until)
+                }
+            )
+        else:
+            return self._delete(
+                'usage',
+                params={
+                    'end': str(until),
+                    'remove-all': True
+                }
+            )
