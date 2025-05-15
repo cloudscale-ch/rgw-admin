@@ -1,5 +1,6 @@
 from datetime import date
 from datetime import datetime
+from typing import override
 from urllib.parse import urlencode
 from urllib.parse import urljoin
 from urllib.parse import urlsplit
@@ -17,6 +18,7 @@ class S3Auth(AuthBase):
     def __init__(self, access_key, secret_key):
         self._hmac_auth = HmacV1Auth(ReadOnlyCredentials(access_key, secret_key, None))
 
+    @override
     def __call__(self, request):
         signature = self._hmac_auth.get_signature(
             request.method, urlsplit(request.url), request.headers
@@ -178,7 +180,7 @@ class AdminClient:
             },
         )
 
-    def get_usage(self, user_id=None, start: int = None, end: int = None):
+    def get_usage(self, user_id=None, start: int | None = None, end: int | None = None):
         assert start is None or isinstance(start, datetime), start
         assert end is None or isinstance(end, datetime), end
         return self._get(

@@ -31,3 +31,13 @@ repos:
         stages: [pre-commit, manual]
         # Same width that black uses by default.
         args: [--wrap=88, --number]
+  - repo: local
+    hooks:
+      - id: mypy
+        name: Run mypy
+        # Do not run with --hook-stage=manual.
+        stages: [pre-commit]
+        types: [python]
+        language: system
+        entry: venv/bin/mypy
+        pass_filenames: false

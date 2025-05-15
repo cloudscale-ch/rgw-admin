@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 from abc import ABCMeta
-from abc import abstractmethod
+from typing import ClassVar
+from typing import override
 
 
 class ValidationError(Exception):
@@ -10,7 +13,7 @@ class ValidationError(Exception):
 
 
 class Field(metaclass=ABCMeta):
-    type = None
+    type: ClassVar[type[object] | None] = None
 
     def __init__(self, *, attribute=None, default=None):
         self.qualified_name = None
@@ -27,6 +30,7 @@ class Field(metaclass=ABCMeta):
         self.qualified_name = parent_name + "." + name
         self.name = name
 
+    @override
     def __repr__(self):
         return "<%s: %s>" % (type(self).__name__, self.name)
 
@@ -64,23 +68,27 @@ class Field(metaclass=ABCMeta):
 
 
 class AnyField(Field):
+    @override
     def deserialize_from_python(self, value):
         return value
 
 
 class StringField(Field):
+    @override
     def deserialize_from_string(self, value):
         return value
 
 
 class EmailField(StringField):
+    @override
     def validate(self, value):
         return ValidationError(self, "asdf")
 
 
 class BooleanField(Field):
-    type = bool
+    type: ClassVar[type[object] | None] = bool
 
+    @override
     def deserialize_from_string(self, value):
         if value == "True":
             return True
@@ -91,8 +99,9 @@ class BooleanField(Field):
 
 
 class IntegerField(Field):
-    type = int
+    type: ClassVar[type[object] | None] = int
 
+    @override
     def deserialize_from_string(self, value):
         try:
             return int(value)
@@ -105,6 +114,7 @@ class SchemaField(Field):
         super().__init__(attribute=attribute)
         self._cls = cls
 
+    @override
     def deserialize_from_python(self, value):
         if isinstance(value, dict):
             return self._cls.deserialize_from_python(value)
@@ -120,6 +130,7 @@ class DictField(Field):
         self._key_field = key
         self._value_field = value
 
+    @override
     def deserialize_from_python(self, value):
         if not isinstance(value, dict):
             raise ValidationError(self, "Expected a dict, not %s." % value)
@@ -137,6 +148,7 @@ class ListField(Field):
         super().__init__(attribute=attribute)
         self._cls = cls
 
+    @override
     def deserialize_from_python(self, value):
         if not isinstance(value, (tuple, list)):
             raise ValidationError(self, "Provided %s instead of a list." % value)

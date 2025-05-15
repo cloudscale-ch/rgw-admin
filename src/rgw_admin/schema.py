@@ -1,4 +1,5 @@
 import collections
+from typing import override
 
 from rgw_admin import fields
 
@@ -57,6 +58,7 @@ class Schema(metaclass=SchemaMeta):
     def as_field(cls, attribute=None):
         return fields.SchemaField(cls, attribute=None)
 
+    @override
     def __repr__(self):
         fields = [
             "%s=%s" % (field.name, repr(getattr(self, field.name)))

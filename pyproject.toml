@@ -20,7 +20,20 @@ email = "info@cloudscale.ch"
 Homepage = "https://github.com/cloudscale-ch/rgw-admin"
 
 [project.optional-dependencies]
-dev = []
+dev = ["mypy", "types-requests", "boto3-stubs[s3]"]
+
+[tool.mypy]
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
+files = ["src"]
+strict = true
+
+enable_error_code = "unreachable, redundant-expr, possibly-undefined, truthy-bool, truthy-iterable, unused-awaitable, explicit-override, mutable-override"
+
+# Disbale type checking in untyped code because there are a lot of errors right now.
+check_untyped_defs = false
+allow_untyped_defs = true
+allow_incomplete_defs = true
+allow_untyped_calls = true
 
 [tool.black]
 skip-magic-trailing-comma = true
