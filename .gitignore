@@ -1,6 +1,5 @@
-venv
-*.sw[opmn]
 *.pyc
-.cache
-.tox
-rgw_admin.egg-info
+*.egg-info
+*.whl
+/venv
+/build
