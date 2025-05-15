@@ -1,5 +1,6 @@
 from datetime import date
 from datetime import datetime
+from typing import overload
 from typing import override
 from urllib.parse import urlencode
 from urllib.parse import urljoin
@@ -118,8 +119,25 @@ class AdminClient:
     def get_period(self):
         return self._get("realm/period")
 
-    def get_user(self, user_id):
-        return self._get("user", serialization.User, params={"uid": user_id})
+    @overload
+    def get_user(self, user_id: str) -> serialization.User: ...
+
+    @overload
+    def get_user(self, *, access_key: str) -> serialization.User: ...
+
+    def get_user(
+        self, user_id: str | None = None, *, access_key: str | None = None
+    ) -> serialization.User:
+        if user_id is not None:
+            params = {"uid": user_id}
+        else:
+            assert access_key is not None
+            params = {"access-key": access_key}
+
+        # https://docs.ceph.com/en/reef/radosgw/adminops/#get-user-info
+        user: serialization.User = self._get("user", serialization.User, params=params)
+
+        return user
 
     def get_bucket_stats(self, name):
         """
