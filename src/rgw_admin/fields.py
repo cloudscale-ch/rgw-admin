@@ -1,4 +1,5 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
+from abc import abstractmethod
 
 
 class ValidationError(Exception):
@@ -20,14 +21,16 @@ class Field(metaclass=ABCMeta):
 
     def __set_name__(self, parent_name, name):
         if name == self.attribute:
-            raise ValidationError(self, "Don't use an attribute if the name matches it.")
-        self.qualified_name = parent_name + '.' + name
+            raise ValidationError(
+                self, "Don't use an attribute if the name matches it."
+            )
+        self.qualified_name = parent_name + "." + name
         self.name = name
 
     def __repr__(self):
-        return '<%s: %s>' % (type(self).__name__, self.name)
+        return "<%s: %s>" % (type(self).__name__, self.name)
 
-    #@abstractmethod
+    # @abstractmethod
     def deserialize_from_string(self, value):
         raise NotImplementedError
 
@@ -45,7 +48,7 @@ class Field(metaclass=ABCMeta):
             if self.default is not None:
                 return self.default
 
-            raise ValidationError(self, 'No value in dict for %s' % attribute)
+            raise ValidationError(self, "No value in dict for %s" % attribute)
 
         return self.deserialize_from_python(value)
 
@@ -53,7 +56,7 @@ class Field(metaclass=ABCMeta):
         if self.type is None or not isinstance(value, self.type):
             if not isinstance(value, str):
                 raise ValidationError(
-                    self, '(%s) for value %s' % (self.qualified_name, value)
+                    self, "(%s) for value %s" % (self.qualified_name, value)
                 )
             value = self.deserialize_from_string(value)
 
@@ -72,19 +75,19 @@ class StringField(Field):
 
 class EmailField(StringField):
     def validate(self, value):
-        return ValidationError(self, 'asdf')
+        return ValidationError(self, "asdf")
 
 
 class BooleanField(Field):
     type = bool
 
     def deserialize_from_string(self, value):
-        if value == 'True':
+        if value == "True":
             return True
-        elif value == 'False':
+        elif value == "False":
             return False
         else:
-            raise ValidationError(self, 'Invalid boolean: %s' % value)
+            raise ValidationError(self, "Invalid boolean: %s" % value)
 
 
 class IntegerField(Field):
@@ -94,7 +97,7 @@ class IntegerField(Field):
         try:
             return int(value)
         except ValidationError:
-            raise ValidationError(self, 'Invalid integer: %s' % value)
+            raise ValidationError(self, "Invalid integer: %s" % value)
 
 
 class SchemaField(Field):
@@ -108,7 +111,7 @@ class SchemaField(Field):
         elif isinstance(value, self._cls):
             return value
 
-        raise ValidationError(self, 'Provided %s instead of a dict.' % value)
+        raise ValidationError(self, "Provided %s instead of a dict." % value)
 
 
 class DictField(Field):
@@ -119,7 +122,7 @@ class DictField(Field):
 
     def deserialize_from_python(self, value):
         if not isinstance(value, dict):
-            raise ValidationError(self, 'Expected a dict, not %s.' % value)
+            raise ValidationError(self, "Expected a dict, not %s." % value)
 
         new_dct = {}
         for key, value in value.items():
@@ -136,6 +139,6 @@ class ListField(Field):
 
     def deserialize_from_python(self, value):
         if not isinstance(value, (tuple, list)):
-            raise ValidationError(self, 'Provided %s instead of a list.' % value)
+            raise ValidationError(self, "Provided %s instead of a list." % value)
 
         return [self._cls.deserialize_from_python(element) for element in value]

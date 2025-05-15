@@ -21,3 +21,10 @@ Homepage = "https://github.com/cloudscale-ch/rgw-admin"
 
 [project.optional-dependencies]
 dev = []
+
+[tool.black]
+skip-magic-trailing-comma = true
+
+[tool.isort]
+profile = "black"
+force_single_line = true
