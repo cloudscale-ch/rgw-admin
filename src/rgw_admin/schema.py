@@ -1,4 +1,5 @@
 import collections
+from typing import override
 
 from rgw_admin import fields
 
@@ -9,12 +10,12 @@ class SchemaMeta(type):
         return collections.OrderedDict()
 
     def __new__(self, name, bases, class_dict):
-        class_dict['_fields'] = ordered = []
+        class_dict["_fields"] = ordered = []
         for key, value in list(class_dict.items()):
             if isinstance(value, fields.Field):
                 del class_dict[key]
 
-                value.__set_name__('', key)
+                value.__set_name__("", key)
                 ordered.append(value)
 
         return type.__new__(self, name, bases, class_dict)
@@ -36,7 +37,7 @@ class Schema(metaclass=SchemaMeta):
     @classmethod
     def deserialize_from_python(cls, dct, report_unused=False):
         if not isinstance(dct, dict):
-            raise fields.ValidationError(None, '%s is not a dictionary.' % dct)
+            raise fields.ValidationError(None, "%s is not a dictionary." % dct)
 
         used = set()
         kwargs = {}
@@ -48,7 +49,7 @@ class Schema(metaclass=SchemaMeta):
             unused = set(dct) - used
             if unused:
                 raise fields.ValidationError(
-                    None, 'Found unused fields %s.' % ', '.join(unused)
+                    None, "Found unused fields %s." % ", ".join(unused)
                 )
 
         return cls(**kwargs)
@@ -57,9 +58,10 @@ class Schema(metaclass=SchemaMeta):
     def as_field(cls, attribute=None):
         return fields.SchemaField(cls, attribute=None)
 
+    @override
     def __repr__(self):
         fields = [
             "%s=%s" % (field.name, repr(getattr(self, field.name)))
             for field in self._fields
         ]
-        return "%s(%s)" % (type(self).__name__, ', '.join(fields))
+        return "%s(%s)" % (type(self).__name__, ", ".join(fields))

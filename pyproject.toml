@@ -1,0 +1,46 @@
+[project]
+name = "rgw_admin"
+description = "RGW Admin access Python API"
+version = "0.1.0"
+
+requires-python = ">= 3.12"
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "botocore>=1.5.77",
+    "requests>=2.20.0",
+]
+
+[[project.authors]]
+name = "cloudscale.ch"
+email = "info@cloudscale.ch"
+
+[project.urls]
+Homepage = "https://github.com/cloudscale-ch/rgw-admin"
+
+[project.optional-dependencies]
+dev = ["pytest", "mypy", "types-requests", "boto3-stubs[s3]"]
+
+[tool.mypy]
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src:$MYPY_CONFIG_FILE_DIR/tests"
+files = ["src", "tests"]
+strict = true
+
+enable_error_code = "unreachable, redundant-expr, possibly-undefined, truthy-bool, truthy-iterable, unused-awaitable, explicit-override, mutable-override"
+
+# Disbale type checking in untyped code because there are a lot of errors right now.
+check_untyped_defs = false
+allow_untyped_defs = true
+allow_incomplete_defs = true
+allow_untyped_calls = true
+
+[tool.pytest.ini_options]
+testpaths = "tests"
+
+[tool.black]
+skip-magic-trailing-comma = true
+
+[tool.isort]
+profile = "black"
+force_single_line = true

@@ -1,5 +1,5 @@
-from rgw_admin.schema import Schema
 from rgw_admin import fields
+from rgw_admin.schema import Schema
 
 
 class KeyEntry(Schema):
@@ -22,17 +22,17 @@ class User(Schema):
 
 
 class Category(Schema):
-    name = fields.StringField(attribute='category')
-    sent_bytes = fields.IntegerField(attribute='bytes_sent')
-    requests = fields.IntegerField(attribute='ops')
-    successful_requests = fields.IntegerField(attribute='successful_ops')
-    received_bytes = fields.IntegerField(attribute='bytes_received')
+    name = fields.StringField(attribute="category")
+    sent_bytes = fields.IntegerField(attribute="bytes_sent")
+    requests = fields.IntegerField(attribute="ops")
+    successful_requests = fields.IntegerField(attribute="successful_ops")
+    received_bytes = fields.IntegerField(attribute="bytes_received")
 
 
 class BucketUsage(Schema):
-    name = fields.StringField(attribute='bucket')
-    datetime = fields.StringField(attribute='time')
-    owner_id = fields.StringField(attribute='owner')
+    name = fields.StringField(attribute="bucket")
+    datetime = fields.StringField(attribute="time")
+    owner_id = fields.StringField(attribute="owner")
     timestamp = fields.IntegerField(attribute="epoch")
     categories = fields.ListField(Category)
 
@@ -50,7 +50,7 @@ class BucketUsage(Schema):
 
 
 class UsageEntry(Schema):
-    user_id = fields.StringField(attribute='user')
+    user_id = fields.StringField(attribute="user")
     buckets = fields.ListField(BucketUsage)
 
 
@@ -65,14 +65,12 @@ class BucketSize(Schema):
 
 
 class Bucket(Schema):
-    name = fields.StringField(attribute='bucket')
+    name = fields.StringField(attribute="bucket")
     owner = fields.StringField()
     size = fields.DictField(
-        key=fields.StringField(),
-        value=BucketSize,
-        attribute='usage'
+        key=fields.StringField(), value=BucketSize, attribute="usage"
     )
-    zonegroup_id = fields.StringField(attribute='zonegroup')
+    zonegroup_id = fields.StringField(attribute="zonegroup")
     marker = fields.StringField()
     id = fields.StringField()
     master_ver = fields.StringField()
@@ -93,8 +91,9 @@ class Bucket(Schema):
     def num_objects(self):
         # The rgw.none filter exists because of a bug in ceph, just remove it:
         # http://tracker.ceph.com/issues/37942
-        return sum(size.num_objects for key, size in self.size.items()
-                   if key != 'rgw.none')
+        return sum(
+            size.num_objects for key, size in self.size.items() if key != "rgw.none"
+        )
 
 
 BucketList = fields.ListField(Bucket)
