@@ -50,6 +50,8 @@ class HttpError(Exception):
 
 
 class AdminClient:
+    metadata_types = ["user", "bucket", "bucket.instance"]
+
     def __init__(
         self, url, access_key, secret_key, *, verify_cert=True, redundant_url=None
     ):
@@ -108,7 +110,7 @@ class AdminClient:
         self._request("delete", *args, **kwargs)
 
     def list_user_ids(self):
-        return self._get("metadata/user")
+        return self.get_metadata("user")
 
     def get_config(self):
         return self._get("config")
@@ -118,6 +120,13 @@ class AdminClient:
 
     def get_period(self):
         return self._get("realm/period")
+
+    def get_metadata(self, metadata_type, key=None):
+        if metadata_type not in self.metadata_types:
+            raise Exception("Invalid metadata_type")
+
+        params = {"key": key} if key else {}
+        return self._get(f"metadata/{metadata_type}", params=params)
 
     @overload
     def get_user(self, user_id: str) -> serialization.User: ...
