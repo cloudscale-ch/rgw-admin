@@ -6,6 +6,7 @@ from rgw_admin import fields
 
 class SchemaMeta(type):
     @classmethod
+    @override
     def __prepare__(self, name, bases):
         return collections.OrderedDict()
 

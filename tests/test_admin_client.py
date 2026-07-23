@@ -55,3 +55,42 @@ def test_get_user(session_request_mock: Mock, admin_client: AdminClient) -> None
         data=None,
         allow_redirects=True,
     )
+
+
+rgw_admin_bucket_base = {
+    "bucket": "empty-bucket",
+    "owner": "user1",
+    "zonegroup": "default",
+    "marker": "",
+    "id": "bucket-id",
+    "master_ver": "0",
+    "bucket_quota": {},
+    "ver": "0",
+    "mtime": "2026-01-01T00:00:00.000000Z",
+    "max_marker": "",
+}
+
+
+@pytest.mark.parametrize(
+    "bucket_response",
+    [
+        pytest.param(
+            {**rgw_admin_bucket_base, "usage": {}}, id="with-empty-usage-attribute"
+        ),
+        pytest.param(rgw_admin_bucket_base, id="without-usage-attribute"),
+    ],
+)
+def test_list_bucket_stats_empty_usage(
+    session_request_mock: Mock,
+    admin_client: AdminClient,
+    bucket_response: dict[str, object],
+) -> None:
+    session_request_mock().json.return_value = [bucket_response]
+
+    buckets = admin_client.list_bucket_stats()
+
+    assert len(buckets) == 1
+    assert buckets[0].name == "empty-bucket"
+    assert buckets[0].size == {}
+    assert buckets[0].size_kb == 0
+    assert buckets[0].num_objects == 0

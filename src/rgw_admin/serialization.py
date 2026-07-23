@@ -68,7 +68,7 @@ class Bucket(Schema):
     name = fields.StringField(attribute="bucket")
     owner = fields.StringField()
     size = fields.DictField(
-        key=fields.StringField(), value=BucketSize, attribute="usage"
+        key=fields.StringField(), value=BucketSize, attribute="usage", default={}
     )
     zonegroup_id = fields.StringField(attribute="zonegroup")
     marker = fields.StringField()
