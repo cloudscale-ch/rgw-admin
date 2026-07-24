@@ -73,11 +73,8 @@ class Bucket(Schema):
     zonegroup_id = fields.StringField(attribute="zonegroup")
     marker = fields.StringField()
     id = fields.StringField()
-    master_ver = fields.StringField()
     bucket_quota = fields.AnyField()
-    ver = fields.StringField()
     mtime = fields.StringField()
-    max_marker = fields.StringField()
 
     @property
     def size_kb_actual(self):
